@@ -1,12 +1,18 @@
+# Web Interface
+streamlit
+
+# PDF Processing & Ingestion
 pymupdf
+
+# AI/ML & Embeddings
+torch
+transformers
 sentence-transformers
-faiss-cpu
-chromadb
-openai
-python-dotenv
-fastapi
-uvicorn[standard]
-pydantic
-tqdm
 numpy
-pandas
+
+# Vector Database
+chromadb
+
+# Utilities
+python-dotenv
+pathlib
