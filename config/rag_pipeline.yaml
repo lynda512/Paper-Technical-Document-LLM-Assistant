@@ -1,0 +1,5 @@
+chunk_size: 800
+chunk_overlap: 200
+index_backend: "chroma"  # or "faiss"
+similarity_top_k: 5
+score_threshold: 0.0

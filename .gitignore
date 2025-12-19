@@ -1,0 +1,78 @@
+# -------------------------
+# Python
+# -------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter / IPython
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# VS Code / IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# -------------------------
+# Project data & artifacts
+# -------------------------
+# Raw and processed data
+data/raw_papers/
+data/processed/
+data/vector_store/
+
+# Chroma / embedding caches
+chroma/
+chroma_db/
+*.chroma
+
+# Hugging Face & model caches (local copies)
+huggingface/
+cache/
+*.safetensors
+*.bin
+
+# Logs and reports generated locally
+logs/
+*.log
+
+# Streamlit & FastAPI runtime
+.streamlit/
+*.db
+*.sqlite
+
+# -------------------------
+# Secrets & local config
+# -------------------------
+.env
+.env.*
+*.secret.*
+# Ignore the virtual environment
+venv/
+env/
+
+# Ignore local vector databases
+data/
+chroma/
+faiss/
+
+# Ignore specific large files
+*.pdf
+*.zip
+*.pyc

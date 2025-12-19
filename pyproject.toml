@@ -1,0 +1,21 @@
+[project]
+name = "paper-llm-assistant"
+version = "0.1.0"
+description = "RAG-based LLM assistant for research papers"
+requires-python = ">=3.10"
+[tool.setuptools.packages.find]
+where = ["src"]
+dependencies = [
+  "pymupdf",
+  "sentence-transformers",
+  "faiss-cpu; platform_system!='Windows'",
+  "chromadb",
+  "openai",
+  "python-dotenv",
+  "fastapi",
+  "uvicorn[standard]",
+  "pydantic",
+  "tqdm",
+  "numpy",
+  "pandas",
+]

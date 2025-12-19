@@ -1,0 +1,12 @@
+pymupdf
+sentence-transformers
+faiss-cpu
+chromadb
+openai
+python-dotenv
+fastapi
+uvicorn[standard]
+pydantic
+tqdm
+numpy
+pandas

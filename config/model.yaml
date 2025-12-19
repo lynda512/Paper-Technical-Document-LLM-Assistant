@@ -1,0 +1,6 @@
+embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+llm_provider: "hf"
+llm_model: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+max_context_tokens: 2048
+temperature: 0.2
+top_k: 5
