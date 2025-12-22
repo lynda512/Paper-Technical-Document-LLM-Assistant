@@ -6,25 +6,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 def load_pdf_pages(path: Path) -> List[Dict[str, Any]]:
-    """
-    Loads a PDF and returns a list of dictionaries, one per page.
-    Preserving page numbers is critical for 'Trustworthy AI' citations.
-    """
     pages_data = []
-    try:
-        with fitz.open(path) as doc:
-            for page_num, page in enumerate(doc, start=1):
-                text = page.get_text("text").strip()
-                if text:  # Only add pages that have actual content
-                    pages_data.append({
-                        "text": text,
-                        "page_label": page_num,
-                        "file_name": path.name
-                    })
-        return pages_data
-    except Exception as e:
-        logger.error(f"Failed to load {path}: {e}")
-        return []
+    with fitz.open(path) as doc:
+        for page_num, page in enumerate(doc, start=1):
+            text = page.get_text("text").strip()
+            if text:
+                pages_data.append({
+                    "text": text,
+                    "page": page_num,         # Must match UI key 'page'
+                    "source": path.name      # Must match UI key 'source'
+                })
+    return pages_data
 
 def load_pdfs_from_dir(dir_path: Path) -> List[Dict[str, Any]]:
     """

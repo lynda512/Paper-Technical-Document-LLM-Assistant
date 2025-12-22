@@ -16,20 +16,19 @@ class ChromaRetriever:
             metadata={"hnsw:space": "cosine"} # Explicitly defining distance metric for transparency
         )
 
+   
     def add_documents(
-        self,
-        ids: List[str],
-        texts: List[str],
-        metadatas: List[Dict[str, Any]],
-        embeddings: List[List[float]],
-    ):
-        """Adds documents with mandatory embeddings to ensure consistency."""
-        self.collection.add(
-            ids=ids,
-            documents=texts,
-            metadatas=metadatas,
-            embeddings=embeddings,
-        )
+    self,
+    ids: List[str],
+    texts: List[str],
+    metadatas: List[Dict],
+    embeddings: Optional[List[List[float]]] = None,):
+        self.collection.upsert(
+        ids=ids,
+        documents=texts,
+        metadatas=metadatas,
+        embeddings=embeddings,
+    )
 
     def query(
         self, 

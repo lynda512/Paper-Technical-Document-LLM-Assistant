@@ -1,48 +1,36 @@
-import torch
+import openai
 from typing import List, Dict
-from transformers import AutoModelForCausalLM, AutoTokenizer
 
 class LLMClient:
-    def __init__(self, model_name: str = "HuggingFaceH4/zephyr-7b-beta"):
-        # Detect GPU for "Deep Learning" hands-on experience
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+    def __init__(self, model_name: str = "local-model"):
+        # mandatory /v1 suffix for LM Studio
+        self.api_base = "http://127.0.0.1:1234/v1"
+        self.api_key = "lm-studio" 
         
-        # Use fast tokenizers for industrial applicability
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
-            device_map="auto" if self.device == "cuda" else None
+        self.client = openai.OpenAI(
+            base_url=self.api_base, 
+            api_key=self.api_key,
+            timeout=120.0 
         )
-        self.max_context = 2048 
 
-    def chat(self, system: str, messages: List[Dict]) -> str:
+    def chat(self, system: str, messages: List[Dict]) -> Dict:
         """
-        Uses Chat Templates to ensure the model follows instructions.
-        Crucial for 'Trustworthy AI' applications.
+        Sends RAG context to Llama 3. 
+        Always returns a dictionary to prevent 'NoneType' errors in UI.
         """
-        # Formulate a proper chat structure
         formatted_messages = [{"role": "system", "content": system}] + messages
         
-        # Applying a chat template is the standard for modern LLMs
-        input_ids = self.tokenizer.apply_chat_template(
-            formatted_messages, 
-            add_generation_prompt=True, 
-            return_tensors="pt"
-        ).to(self.device)
-
-        with torch.no_grad():
-            output = self.model.generate(
-                input_ids,
-                max_new_tokens=256,
-                temperature=0.1, # Low temperature for "faithfulness" to research text
-                do_sample=True,
-                pad_token_id=self.tokenizer.eos_token_id
+        try:
+            response = self.client.chat.completions.create(
+                model="meta-llama-3-8b-instruct", 
+                messages=formatted_messages,
+                temperature=0.1, # Critical for 'Trustworthy AI' faithfulness
+                max_tokens=900
             )
-        
-        # Decode only the new tokens (the assistant's response)
-        response = self.tokenizer.decode(
-            output[0][len(input_ids[0]):], 
-            skip_special_tokens=True
-        )
-        return response.strip()
+            return {"answer": response.choices[0].message.content, "status": "success"}
+        except Exception as e:
+            # Return a dict instead of a raw string to keep UI subscriptable
+            return {
+                "answer": f"❌ Connection Error: Ensure LM Studio server is started on port 1234. Detail: {str(e)}",
+                "status": "error"
+            }

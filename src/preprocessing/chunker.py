@@ -1,64 +1,79 @@
-from typing import List, Dict, Optional
+from typing import List, Dict
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
+
 class RecursiveChunker:
     """
-    An industry-standard chunker that splits text based on a hierarchy 
-    of separators to keep semantically related content together.
+    Industry-standard chunker that splits text based on a hierarchy 
+    to preserve semantic meaning and metadata for citations.
     """
     def __init__(
-        self, 
-        chunk_size: int = 1000, 
+        self,
+        chunk_size: int = 1000,
         chunk_overlap: int = 200,
-        separators: List[str] = ["\n\n", "\n", ". ", " ", ""]
+        separators: List[str] = ["\n\n", "\n", ". ", " ", ""],
     ):
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.separators = separators
 
     def chunk_text(
-        self, 
-        text: str, 
-        doc_metadata: Dict
+        self,
+        text: str,
+        doc_metadata: Dict,
     ) -> List[Dict]:
         """
-        Splits text into overlapping chunks while preserving metadata 
-        for 'Trustworthy AI' citations.
+        Splits text and attaches metadata compatible with RAGPipeline.index_chunks.
         """
+        # Safely extract metadata for citation traceability
+        file_name = doc_metadata.get("source", "unknown")
+        page_num = doc_metadata.get("page", 0)
+        doc_id = doc_metadata.get("doc_id", file_name)
+
+        split_texts = self._recursive_split(text, self.separators)
+
         chunks = []
-        # In a real engineering scenario, you'd use a library like LangChain's 
-        # RecursiveCharacterTextSplitter, but here is a robust manual implementation logic:
-        
-        raw_chunks = self._recursive_split(text, self.separators)
-        
-        for i, chunk_content in enumerate(raw_chunks):
-            chunks.append({
-                "chunk_id": f"{doc_metadata.get('id', 'doc')}_{i}",
-                "doc_id": doc_metadata.get("id"),
-                "text": chunk_content,
-                "metadata": {
-                    **doc_metadata,
-                    "chunk_index": i
+        current_char = 0  # track position to estimate line
+
+        for chunk_content in split_texts:
+            # rough line estimate: count newlines up to this chunk
+            prefix = text[:current_char]
+            approx_line = prefix.count("\n") + 1
+
+            chunks.append(
+                {
+                    "chunk_id": f"{doc_id}_p{page_num}_{uuid.uuid4().hex[:8]}",
+                    "text": chunk_content,
+                    # flat metadata so RAGPipeline.index_chunks can read it
+                    "doc_id": doc_id,
+                    "file_name": file_name,
+                    "page_number": page_num,
+                    "line": approx_line,
                 }
-            })
-            
-        logger.info(f"Created {len(chunks)} chunks from document {doc_metadata.get('id')}")
+            )
+
+            current_char += len(chunk_content)
+
         return chunks
 
     def _recursive_split(self, text: str, separators: List[str]) -> List[str]:
-        # This is where the engineering 'know-how' happens: 
-        # Attempting to split by the largest separator (paragraphs) first, 
-        # then sentences, then words.
-        # For a simplified version in your repo:
+        """
+        Handles the sliding-window splitting logic.
+        """
         final_chunks = []
         current_start = 0
-        
+
         while current_start < len(text):
-            end = current_start + self.chunk_size
+            end = min(current_start + self.chunk_size, len(text))
             chunk = text[current_start:end]
             final_chunks.append(chunk)
+
+            if end == len(text):
+                break
+
             current_start += (self.chunk_size - self.chunk_overlap)
-            
+
         return final_chunks

@@ -46,6 +46,7 @@ class RAGPipeline:
             } for c in chunks
         ]
 
+
         logger.info(f"Indexing {len(texts)} chunks into vector store...")
         embeddings = self.embedder.embed_texts(texts).tolist()
         self.retriever.add_documents(ids, texts, metadatas, embeddings=embeddings)
@@ -92,9 +93,13 @@ class RAGPipeline:
 
         latency_ms = int((time.time() - start_time) * 1000)
 
+        # In pipeline.py
         return {
-            "answer": response,
-            "citations": metadatas, # Clearer naming for the "Trustworthy AI" goal
-            "latency_ms": latency_ms,
-            "retrieval_count": len(docs)
-        }
+        "answer": response.get("answer", "No answer generated."),
+        "status": response.get("status", "unknown"),
+        "source_docs": docs,
+        "citations": metadatas,
+        "latency_ms": latency_ms,
+        "retrieval_count": len(docs),
+    }
+    

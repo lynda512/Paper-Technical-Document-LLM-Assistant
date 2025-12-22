@@ -33,3 +33,4 @@ uvicorn src.ui.app:app --reload
 - Dependent on PDF quality and extraction.
 - No citation-level grounding yet.
 - Uses external LLM APIs; cost and latency apply.
+ set PYTHONPATH=.
