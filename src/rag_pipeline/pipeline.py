@@ -18,7 +18,6 @@ class RAGConfig:
     llm_model: str
     persist_dir: str
     top_k: int = 5
-    # Demonstrates "Deep Expertise": allowing temperature control for consistency
     llm_temperature: float = 0.0 
 
 class RAGPipeline:

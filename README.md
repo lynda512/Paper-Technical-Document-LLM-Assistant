@@ -10,10 +10,11 @@ RAG-based **assistant** for research papers: upload PDFs, index them, and ask qu
 - Report and slides that explain use cases for students, researchers, and companies.
 
 ## Quickstart
-
+.venv\Scripts\activate
 pip install -r requirements.txt # or use pyproject.toml
-export OPENAI_API_KEY=...
-uvicorn src.ui.app:app --reload
+set PYTHONPATH=.
+
+Streamlit run src/ui/app.py
 
 - Open `http://localhost:8000/docs` and:
   - Use `/upload` to upload a paper.
@@ -33,4 +34,3 @@ uvicorn src.ui.app:app --reload
 - Dependent on PDF quality and extraction.
 - No citation-level grounding yet.
 - Uses external LLM APIs; cost and latency apply.
- set PYTHONPATH=.
