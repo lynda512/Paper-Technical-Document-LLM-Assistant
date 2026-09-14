@@ -18,7 +18,7 @@ class HybridSearchPipeline:
         self.bm25 = BM25Retriever(documents)
         self.dense = DenseRetriever(collection_name, qdrant_url)
         self.rrf_k = rrf_k
-        self.reranker = CrossEncoder(reranker_model) if reranker_model else None
+        self.reranker = CrossEncoder( reranker_model, trust_remote_code=True) if reranker_model else None
 
     def hybrid_search(
         self,
@@ -63,7 +63,8 @@ class HybridSearchPipeline:
     documents=my_docs,
     collection_name="my_rag_collection",
     rrf_k=60,
-    reranker_model="cross-encoder/ms-marco-MiniLM-L-6-v2"  # optional
+   reranker_model="Alibaba-NLP/gte-reranker-modernbert-base"
+
 )"""
 
-results = pipeline.hybrid_search("ERR_CONN_RESET_4XX retry semantics", top_k=5)
+#results = pipeline.hybrid_search("ERR_CONN_RESET_4XX retry semantics", top_k=5)
